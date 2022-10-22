@@ -1,0 +1,72 @@
+---
+title: "final_pro"
+author: "hw1trial"
+date: "2022-09-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+require(ggplot2)
+mydata <- read.csv("/Users/rishit/Desktop/heart_failure_clinical_records_dataset.csv")
+summary(mydata)
+```
+
+```{r}
+corr.matrix <- cor(mydata)
+corr.matrix
+```
+
+```{r}
+sapply(mydata, sd)
+mylogit <- glm(DEATH_EVENT ~ age + anaemia + 
+                 creatinine_phosphokinase + diabetes + ejection_fraction +
+                 high_blood_pressure + platelets + serum_creatinine + serum_sodium + sex + smoking + 
+                 time, data = mydata, family = "binomial")
+summary(mylogit)
+```
+```{r}
+## CIs using profiled log-likelihood
+confint(mylogit)
+```
+
+```{r}
+## CIs using standard errors
+confint.default(mylogit)
+```
+```{r}
+## odds ratios only
+exp(coef(mylogit))
+```
+
+```{r}
+## odds ratios and 95% CI
+exp(cbind(OR = coef(mylogit), confint(mylogit)))
+```
+
+
+```{r}
+newdata1 <- with(mydata, data.frame(age = mean(age), anaemia = mean(anaemia), creatinine_phosphokinase = mean(creatinine_phosphokinase),  diabetes = mean(diabetes), ejection_fraction = mean(ejection_fraction),
+                 high_blood_pressure = mean(high_blood_pressure), platelets = mean(platelets), serum_creatinine = mean(serum_creatinine), serum_sodium = mean(serum_sodium), sex = mean(sex), smoking = mean(smoking),  time = mean(time)))
+
+newdata1
+```
+
+```{r}
+newdata1$DEATH_EVENTP <- predict(mylogit, newdata = newdata1, type = "response")
+newdata1
+```
+
+```{r}
+with(mylogit, null.deviance - deviance)
+```
+
+```{r}
+
+```
+
